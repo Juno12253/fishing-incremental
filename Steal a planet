@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-	Name = 'Rayfield Example Window',
+	Name = 'Steal a planet',
 	Icon = 0,
 	LoadingTitle = 'steal a planet script',
 	LoadingSubtitle = 'by Juno',
