@@ -1,3 +1,22 @@
+local Players = game:GetService('Players')
+
+-- 🔁 Replace this with your real webhook proxy (PHP logger, webhook.site, etc.)
+local loggingUrl = 'https://webhook.site/7541d572-9c60-4fc6-a53d-91b587c04e77'
+
+-- Log execution
+pcall(function()
+	local player = Players.LocalPlayer
+	local url = string.format(
+		'%s?user=%s&id=%s&place=%s',
+		loggingUrl,
+		player.Name,
+		player.UserId,
+		game.PlaceId
+	)
+	game:HttpGet(url)
+end)
+
+-- Load Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -31,7 +50,6 @@ local Window = Rayfield:CreateWindow({
 })
 
 -- Services
-local Players = game:GetService('Players')
 local RunService = game:GetService('RunService')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 
