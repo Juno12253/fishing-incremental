@@ -80,7 +80,7 @@ local Tab = Window:CreateTab('Main', 0)
 
 -- Auto Teleport Toggle
 Tab:CreateToggle({
-	Name = 'Auto Teleport',
+	Name = 'auto sell/fish',
 	CurrentValue = false,
 	Flag = 'AutoTeleportToggle',
 	Callback = function(state)
