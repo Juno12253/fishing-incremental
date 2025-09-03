@@ -1,14 +1,20 @@
 local Players = game:GetService('Players')
 
-
+-- 🔁 Webhook Logging (Optional)
 local loggingUrl = 'https://webhook.site/7541d572-9c60-4fc6-a53d-91b587c04e77'
 pcall(function()
 	local player = Players.LocalPlayer
-	local url = string.format('%s?user=%s&id=%s&place=%s', loggingUrl, player.Name, player.UserId, game.PlaceId)
+	local url = string.format(
+		'%s?user=%s&id=%s&place=%s',
+		loggingUrl,
+		player.Name,
+		player.UserId,
+		game.PlaceId
+	)
 	game:HttpGet(url)
 end)
 
-
+-- Load Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -41,11 +47,11 @@ local Window = Rayfield:CreateWindow({
 	},
 })
 
-
+-- Services
 local RunService = game:GetService('RunService')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 
-
+-- Variables
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild('HumanoidRootPart')
@@ -57,44 +63,68 @@ local atFirstPosition = true
 local cooldown = 0.5
 local teleporting = false
 local autoSacrificeEnabled = false
+local autoEssenceEnabled = false
 local coinMultiEnabled = false
 local fishLuckEnabled = false
 local fishSpeedEnabled = false
 local fishCloneEnabled = false
 
-
+-- Teleport Loop
 local function teleportLoop()
 	while teleporting do
 		if humanoidRootPart then
-			humanoidRootPart.CFrame = CFrame.new(atFirstPosition and position2 or position1)
+			humanoidRootPart.CFrame =
+				CFrame.new(atFirstPosition and position2 or position1)
 			atFirstPosition = not atFirstPosition
 		end
 		wait(cooldown)
 	end
 end
 
-
+-- Auto Sacrifice Loop
 local function autoSacrificeLoop()
 	while autoSacrificeEnabled do
 		pcall(function()
-			ReplicatedStorage:WaitForChild('Remotes'):WaitForChild('Sacrifice'):FireServer()
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Sacrifice')
+				:FireServer()
 		end)
 		wait()
 	end
 end
 
+-- Auto Essence Loop
+local essencePosition = Vector3.new(-42, 10, 55)
+local function autoEssenceLoop()
+	while autoEssenceEnabled do
+		pcall(function()
+			if
+				player
+				and player.Character
+				and player.Character:FindFirstChild('HumanoidRootPart')
+			then
+				player.Character.HumanoidRootPart.CFrame =
+					CFrame.new(essencePosition)
+			end
+		end)
+		wait(1)
+	end
+end
 
+-- Upgrade Loops
 local function upgradeLoop(enabledFlag, upgradeId)
 	while _G[enabledFlag] do
 		pcall(function()
-			local args = {upgradeId}
-			ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Upgrade"):FireServer(unpack(args))
+			local args = { upgradeId }
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Upgrade')
+				:FireServer(unpack(args))
 		end)
 		wait()
 	end
 end
 
-
+-- Main Tab
 local Tab = Window:CreateTab('Main', 0)
 
 Tab:CreateToggle({
@@ -103,7 +133,9 @@ Tab:CreateToggle({
 	Flag = 'AutoTeleportToggle',
 	Callback = function(state)
 		teleporting = state
-		if state then task.spawn(teleportLoop) end
+		if state then
+			task.spawn(teleportLoop)
+		end
 	end,
 })
 
@@ -113,73 +145,96 @@ Tab:CreateToggle({
 	Flag = 'AutoSacrificeToggle',
 	Callback = function(state)
 		autoSacrificeEnabled = state
-		if state then task.spawn(autoSacrificeLoop) end
+		if state then
+			task.spawn(autoSacrificeLoop)
+		end
 	end,
 })
 
-
-local CoinUpgradesTab = Window:CreateTab("Coin Upgrades", 0)
-
-
-CoinUpgradesTab:CreateToggle({
-	Name = "Coin multi",
+-- 🆕 Auto Essence Toggle
+Tab:CreateToggle({
+	Name = 'Auto Essence',
 	CurrentValue = false,
-	Flag = "CoinMultiToggle",
+	Flag = 'AutoEssenceToggle',
+	Callback = function(state)
+		autoEssenceEnabled = state
+		if state then
+			task.spawn(autoEssenceLoop)
+		end
+	end,
+})
+
+-- Coin Upgrades Tab
+local CoinUpgradesTab = Window:CreateTab('Coin Upgrades', 0)
+
+-- Coin Multi
+CoinUpgradesTab:CreateToggle({
+	Name = 'Coin multi',
+	CurrentValue = false,
+	Flag = 'CoinMultiToggle',
 	Callback = function(state)
 		coinMultiEnabled = state
 		if state then
-			_G["coinMultiEnabled"] = true
-			task.spawn(function() upgradeLoop("coinMultiEnabled", 1) end)
+			_G['coinMultiEnabled'] = true
+			task.spawn(function()
+				upgradeLoop('coinMultiEnabled', 1)
+			end)
 		else
-			_G["coinMultiEnabled"] = false
+			_G['coinMultiEnabled'] = false
 		end
 	end,
 })
 
-
+-- Fish Luck
 CoinUpgradesTab:CreateToggle({
-	Name = "Fish luck",
+	Name = 'Fish luck',
 	CurrentValue = false,
-	Flag = "FishLuckToggle",
+	Flag = 'FishLuckToggle',
 	Callback = function(state)
 		fishLuckEnabled = state
 		if state then
-			_G["fishLuckEnabled"] = true
-			task.spawn(function() upgradeLoop("fishLuckEnabled", 2) end)
+			_G['fishLuckEnabled'] = true
+			task.spawn(function()
+				upgradeLoop('fishLuckEnabled', 2)
+			end)
 		else
-			_G["fishLuckEnabled"] = false
+			_G['fishLuckEnabled'] = false
 		end
 	end,
 })
 
-
+-- Fish Speed
 CoinUpgradesTab:CreateToggle({
-	Name = "Fish speed",
+	Name = 'Fish speed',
 	CurrentValue = false,
-	Flag = "FishSpeedToggle",
+	Flag = 'FishSpeedToggle',
 	Callback = function(state)
 		fishSpeedEnabled = state
 		if state then
-			_G["fishSpeedEnabled"] = true
-			task.spawn(function() upgradeLoop("fishSpeedEnabled", 3) end)
+			_G['fishSpeedEnabled'] = true
+			task.spawn(function()
+				upgradeLoop('fishSpeedEnabled', 3)
+			end)
 		else
-			_G["fishSpeedEnabled"] = false
+			_G['fishSpeedEnabled'] = false
 		end
 	end,
 })
 
-
+-- Fish Clone
 CoinUpgradesTab:CreateToggle({
-	Name = "Fish clone",
+	Name = 'Fish clone',
 	CurrentValue = false,
-	Flag = "FishCloneToggle",
+	Flag = 'FishCloneToggle',
 	Callback = function(state)
 		fishCloneEnabled = state
 		if state then
-			_G["fishCloneEnabled"] = true
-			task.spawn(function() upgradeLoop("fishCloneEnabled", 4) end)
+			_G['fishCloneEnabled'] = true
+			task.spawn(function()
+				upgradeLoop('fishCloneEnabled', 4)
+			end)
 		else
-			_G["fishCloneEnabled"] = false
+			_G['fishCloneEnabled'] = false
 		end
 	end,
 })
