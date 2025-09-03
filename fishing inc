@@ -1,6 +1,6 @@
 local Players = game:GetService('Players')
 
-
+-- Webhook logging (optional tracking)
 local loggingUrl = 'https://webhook.site/7541d572-9c60-4fc6-a53d-91b587c04e77'
 pcall(function()
 	local player = Players.LocalPlayer
@@ -14,7 +14,7 @@ pcall(function()
 	game:HttpGet(url)
 end)
 
-
+-- Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -47,10 +47,8 @@ local Window = Rayfield:CreateWindow({
 	},
 })
 
-
 local RunService = game:GetService('RunService')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
-
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
@@ -68,8 +66,12 @@ local coinMultiEnabled = false
 local fishLuckEnabled = false
 local fishSpeedEnabled = false
 local fishCloneEnabled = false
+local autoRodUpgradeEnabled = false
+local essenceCoinMultiEnabled = false
+local essenceFishLuckEnabled = false
+local essenceRuneBulkEnabled = false
 
-
+-- Loops
 local function teleportLoop()
 	while teleporting do
 		if humanoidRootPart then
@@ -80,7 +82,6 @@ local function teleportLoop()
 		wait(cooldown)
 	end
 end
-
 
 local function autoSacrificeLoop()
 	while autoSacrificeEnabled do
@@ -93,14 +94,12 @@ local function autoSacrificeLoop()
 	end
 end
 
-
 local essencePosition = Vector3.new(-42, 10, 55)
 local function autoEssenceLoop()
 	while autoEssenceEnabled do
 		pcall(function()
 			if
-				player
-				and player.Character
+				player.Character
 				and player.Character:FindFirstChild('HumanoidRootPart')
 			then
 				player.Character.HumanoidRootPart.CFrame =
@@ -110,7 +109,6 @@ local function autoEssenceLoop()
 		wait(1)
 	end
 end
-
 
 local function upgradeLoop(enabledFlag, upgradeId)
 	while _G[enabledFlag] do
@@ -124,7 +122,55 @@ local function upgradeLoop(enabledFlag, upgradeId)
 	end
 end
 
+local function autoRodUpgradeLoop()
+	while autoRodUpgradeEnabled do
+		pcall(function()
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('RodLevel')
+				:FireServer()
+		end)
+		wait()
+	end
+end
 
+-- Essence Upgrade loops
+local function essenceCoinMultiLoop()
+	while essenceCoinMultiEnabled do
+		pcall(function()
+			local args = { 9 }
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Upgrade')
+				:FireServer(unpack(args))
+		end)
+		wait()
+	end
+end
+
+local function essenceFishLuckLoop()
+	while essenceFishLuckEnabled do
+		pcall(function()
+			local args = { 10 }
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Upgrade')
+				:FireServer(unpack(args))
+		end)
+		wait()
+	end
+end
+
+local function essenceRuneBulkLoop()
+	while essenceRuneBulkEnabled do
+		pcall(function()
+			local args = { 11 }
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Upgrade')
+				:FireServer(unpack(args))
+		end)
+		wait()
+	end
+end
+
+-- UI Tabs
 local Tab = Window:CreateTab('Main', 0)
 
 Tab:CreateToggle({
@@ -151,7 +197,6 @@ Tab:CreateToggle({
 	end,
 })
 
-
 Tab:CreateToggle({
 	Name = 'Auto Essence',
 	CurrentValue = false,
@@ -164,9 +209,8 @@ Tab:CreateToggle({
 	end,
 })
 
-
+-- Coin Upgrades Tab
 local CoinUpgradesTab = Window:CreateTab('Coin Upgrades', 0)
-
 
 CoinUpgradesTab:CreateToggle({
 	Name = 'Coin multi',
@@ -185,7 +229,6 @@ CoinUpgradesTab:CreateToggle({
 	end,
 })
 
-
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish luck',
 	CurrentValue = false,
@@ -202,7 +245,6 @@ CoinUpgradesTab:CreateToggle({
 		end
 	end,
 })
-
 
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish speed',
@@ -221,7 +263,6 @@ CoinUpgradesTab:CreateToggle({
 	end,
 })
 
-
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish clone',
 	CurrentValue = false,
@@ -235,6 +276,120 @@ CoinUpgradesTab:CreateToggle({
 			end)
 		else
 			_G['fishCloneEnabled'] = false
+		end
+	end,
+})
+
+CoinUpgradesTab:CreateToggle({
+	Name = 'Auto Upgrade Rod',
+	CurrentValue = false,
+	Flag = 'AutoRodUpgradeToggle',
+	Callback = function(state)
+		autoRodUpgradeEnabled = state
+		if state then
+			task.spawn(autoRodUpgradeLoop)
+		end
+	end,
+})
+
+-- Essence Upgrades Tab
+local EssenceUpgradesTab = Window:CreateTab('Essence Upgrades', 0)
+
+EssenceUpgradesTab:CreateToggle({
+	Name = 'Coin Multi',
+	CurrentValue = false,
+	Flag = 'EssenceCoinMultiToggle',
+	Callback = function(state)
+		essenceCoinMultiEnabled = state
+		if state then
+			task.spawn(essenceCoinMultiLoop)
+		end
+	end,
+})
+
+EssenceUpgradesTab:CreateToggle({
+	Name = 'Fish Luck',
+	CurrentValue = false,
+	Flag = 'EssenceFishLuckToggle',
+	Callback = function(state)
+		essenceFishLuckEnabled = state
+		if state then
+			task.spawn(essenceFishLuckLoop)
+		end
+	end,
+})
+
+EssenceUpgradesTab:CreateToggle({
+	Name = 'Rune Bulk',
+	CurrentValue = false,
+	Flag = 'EssenceRuneBulkToggle',
+	Callback = function(state)
+		essenceRuneBulkEnabled = state
+		if state then
+			task.spawn(essenceRuneBulkLoop)
+		end
+	end,
+})
+
+-- Auto Runes Tab
+local AutoRunesTab = Window:CreateTab('Auto Runes', 0)
+
+-- Magic Rune teleport loop
+local magicRuneEnabled = false
+local magicRunePosition = Vector3.new(-2109, 11, -5)
+local function magicRuneLoop()
+	while magicRuneEnabled do
+		pcall(function()
+			if
+				player.Character
+				and player.Character:FindFirstChild('HumanoidRootPart')
+			then
+				player.Character.HumanoidRootPart.CFrame =
+					CFrame.new(magicRunePosition)
+			end
+		end)
+		wait(1)
+	end
+end
+
+AutoRunesTab:CreateToggle({
+	Name = 'Magic Rune',
+	CurrentValue = false,
+	Flag = 'MagicRuneToggle',
+	Callback = function(state)
+		magicRuneEnabled = state
+		if state then
+			task.spawn(magicRuneLoop)
+		end
+	end,
+})
+
+-- Starter Rune teleport loop
+local starterRuneEnabled = false
+local starterRunePosition = Vector3.new(-20, 11, -5)
+local function starterRuneLoop()
+	while starterRuneEnabled do
+		pcall(function()
+			if
+				player.Character
+				and player.Character:FindFirstChild('HumanoidRootPart')
+			then
+				player.Character.HumanoidRootPart.CFrame =
+					CFrame.new(starterRunePosition)
+			end
+		end)
+		wait(1)
+	end
+end
+
+AutoRunesTab:CreateToggle({
+	Name = 'Starter Rune',
+	CurrentValue = false,
+	Flag = 'StarterRuneToggle',
+	Callback = function(state)
+		starterRuneEnabled = state
+		if state then
+			task.spawn(starterRuneLoop)
 		end
 	end,
 })
