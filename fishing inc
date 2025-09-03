@@ -1,6 +1,6 @@
 local Players = game:GetService('Players')
 
--- 🔁 Webhook Logging (Optional)
+
 local loggingUrl = 'https://webhook.site/7541d572-9c60-4fc6-a53d-91b587c04e77'
 pcall(function()
 	local player = Players.LocalPlayer
@@ -14,7 +14,7 @@ pcall(function()
 	game:HttpGet(url)
 end)
 
--- Load Rayfield
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -47,11 +47,11 @@ local Window = Rayfield:CreateWindow({
 	},
 })
 
--- Services
+
 local RunService = game:GetService('RunService')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 
--- Variables
+
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild('HumanoidRootPart')
@@ -69,7 +69,7 @@ local fishLuckEnabled = false
 local fishSpeedEnabled = false
 local fishCloneEnabled = false
 
--- Teleport Loop
+
 local function teleportLoop()
 	while teleporting do
 		if humanoidRootPart then
@@ -81,7 +81,7 @@ local function teleportLoop()
 	end
 end
 
--- Auto Sacrifice Loop
+
 local function autoSacrificeLoop()
 	while autoSacrificeEnabled do
 		pcall(function()
@@ -93,7 +93,7 @@ local function autoSacrificeLoop()
 	end
 end
 
--- Auto Essence Loop
+
 local essencePosition = Vector3.new(-42, 10, 55)
 local function autoEssenceLoop()
 	while autoEssenceEnabled do
@@ -111,7 +111,7 @@ local function autoEssenceLoop()
 	end
 end
 
--- Upgrade Loops
+
 local function upgradeLoop(enabledFlag, upgradeId)
 	while _G[enabledFlag] do
 		pcall(function()
@@ -124,7 +124,7 @@ local function upgradeLoop(enabledFlag, upgradeId)
 	end
 end
 
--- Main Tab
+
 local Tab = Window:CreateTab('Main', 0)
 
 Tab:CreateToggle({
@@ -151,7 +151,7 @@ Tab:CreateToggle({
 	end,
 })
 
--- 🆕 Auto Essence Toggle
+
 Tab:CreateToggle({
 	Name = 'Auto Essence',
 	CurrentValue = false,
@@ -164,10 +164,10 @@ Tab:CreateToggle({
 	end,
 })
 
--- Coin Upgrades Tab
+
 local CoinUpgradesTab = Window:CreateTab('Coin Upgrades', 0)
 
--- Coin Multi
+
 CoinUpgradesTab:CreateToggle({
 	Name = 'Coin multi',
 	CurrentValue = false,
@@ -185,7 +185,7 @@ CoinUpgradesTab:CreateToggle({
 	end,
 })
 
--- Fish Luck
+
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish luck',
 	CurrentValue = false,
@@ -203,7 +203,7 @@ CoinUpgradesTab:CreateToggle({
 	end,
 })
 
--- Fish Speed
+
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish speed',
 	CurrentValue = false,
@@ -221,7 +221,7 @@ CoinUpgradesTab:CreateToggle({
 	end,
 })
 
--- Fish Clone
+
 CoinUpgradesTab:CreateToggle({
 	Name = 'Fish clone',
 	CurrentValue = false,
