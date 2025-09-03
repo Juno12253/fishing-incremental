@@ -1,0 +1,105 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+	Name = 'junos fishing incremental',
+	Icon = 0,
+	LoadingTitle = 'Junos fishing incremental',
+	LoadingSubtitle = 'by juno',
+	ShowText = 'ock',
+	Theme = 'Default',
+	ToggleUIKeybind = 'K',
+	ConfigurationSaving = {
+		Enabled = true,
+		FolderName = nil,
+		FileName = 'Big Hub',
+	},
+	Discord = {
+		Enabled = false,
+		Invite = 'noinvitelink',
+		RememberJoins = true,
+	},
+	KeySystem = false,
+	KeySettings = {
+		Title = 'Untitled',
+		Subtitle = 'Key System',
+		Note = 'Key here discord.gg/',
+		FileName = 'Key',
+		SaveKey = true,
+		GrabKeyFromSite = false,
+		Key = { 'Hello' },
+	},
+})
+
+-- Services
+local Players = game:GetService('Players')
+local RunService = game:GetService('RunService')
+local ReplicatedStorage = game:GetService('ReplicatedStorage')
+
+-- Variables
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild('HumanoidRootPart')
+
+local position1 = Vector3.new(29, 10, -2)
+local position2 = Vector3.new(3, 11, -45)
+
+local atFirstPosition = true
+local cooldown = 0.5
+local teleporting = false
+local autoSacrificeEnabled = false
+
+-- Teleport function (loop)
+local function teleportLoop()
+	while teleporting do
+		if humanoidRootPart then
+			if atFirstPosition then
+				humanoidRootPart.CFrame = CFrame.new(position2)
+			else
+				humanoidRootPart.CFrame = CFrame.new(position1)
+			end
+			atFirstPosition = not atFirstPosition
+		end
+		wait(cooldown)
+	end
+end
+
+-- Auto Sacrifice function (loop)
+local function autoSacrificeLoop()
+	while autoSacrificeEnabled do
+		pcall(function()
+			ReplicatedStorage:WaitForChild('Remotes')
+				:WaitForChild('Sacrifice')
+				:FireServer()
+		end)
+		wait() -- Runs every frame; change to wait(1) if too fast
+	end
+end
+
+-- UI Tab
+local Tab = Window:CreateTab('Main', 0)
+
+-- Auto Teleport Toggle
+Tab:CreateToggle({
+	Name = 'Auto Teleport',
+	CurrentValue = false,
+	Flag = 'AutoTeleportToggle',
+	Callback = function(state)
+		teleporting = state
+		if state then
+			task.spawn(teleportLoop)
+		end
+	end,
+})
+
+-- Auto Sacrifice Toggle
+Tab:CreateToggle({
+	Name = 'Auto Sacrifice',
+	CurrentValue = false,
+	Flag = 'AutoSacrificeToggle',
+	Callback = function(state)
+		autoSacrificeEnabled = state
+		if state then
+			task.spawn(autoSacrificeLoop)
+		end
+	end,
+})
